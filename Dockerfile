@@ -2,8 +2,9 @@ FROM airdock/oraclejdk:1.8 as metabrainz-spark-base
 
 # Compile and install specific version of Python
 # The jdk image comes with jessie which has python 3.4 which
-# is not supported anymore
-# Based on https://github.com/docker-library/python/blob/master/3.7/wheezy/Dockerfile
+# is not supported anymore. We install Python 3.6 here because
+# 3.7 needs a version of OpenSSL that is not available in  jessie
+# Based on https://github.com/docker-library/python/blob/master/3.6/jessie/Dockerfile
 
 # Ensure that local Python build is preferred over whatever might come with the base image
 ENV PATH /usr/local/bin:$PATH
