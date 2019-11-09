@@ -29,28 +29,28 @@ from flask import current_app
 
 class RequestConsumer:
 
-	def get_response(self, request):
-		query = request['query']
-		params = request['params']
+    def get_response(self, request):
+        query = request['query']
+        params = request['params']
 
-		try:
-			query_handler = listenbrainz_spark.query_map.functions[query]
-		except KeyError:
-			current_app.logger.error("Bad query sent to spark request consumer: %s", query, exc_info=True)
-			return None
+        try:
+            query_handler = listenbrainz_spark.query_map.functions[query]
+        except KeyError:
+            current_app.logger.error("Bad query sent to spark request consumer: %s", query, exc_info=True)
+            return None
 
-		try:
-			return query_handler(**params)
-		except TypeError as e:
-			current_app.logger.error("TypeError in the query handler for query '%s', maybe bad params. Error: %s", query, str(e), exc_info=True)
-			return None
-		except Exception as e:
-			current_app.logger.error("Error in the query handler for query '%s': %s", query, str(e), exc_info=True)
-			return None
+        try:
+            return query_handler(**params)
+        except TypeError as e:
+            current_app.logger.error("TypeError in the query handler for query '%s', maybe bad params. Error: %s", query, str(e), exc_info=True)
+            return None
+        except Exception as e:
+            current_app.logger.error("Error in the query handler for query '%s': %s", query, str(e), exc_info=True)
+            return None
 
 
-	def push_to_response_queue(response):
-		while True:
+    def push_to_response_queue(response):
+        while True:
             try:
                 self.response_channel.basic_publish(
                     exchange=current_app.config['SPARK_RESULT_EXCHANGE'],
@@ -66,12 +66,12 @@ class RequestConsumer:
         request = json.loads(body.decode('utf-8'))
         response = self.get_response(request)
         if response:
-        	self.push_to_response_queue(response)
+            self.push_to_response_queue(response)
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
 
     def connect_to_rabbitmq():
-    	self.rabbitmq = init_rabbitmq(
+        self.rabbitmq = init_rabbitmq(
             username=current_app.config['RABBITMQ_USERNAME'],
             password=current_app.config['RABBITMQ_PASSWORD'],
             host=current_app.config['RABBITMQ_HOST'],
@@ -87,15 +87,15 @@ class RequestConsumer:
             sys.exit(-1)
         with app.app_context():
             while True:
-            	self.connect_to_rabbitmq()
-		        self.request_channel = self.rabbitmq.channel()
-		        self.request_channel.exchange_declare(exchange=current_app.config['SPARK_REQUEST_EXCHANGE'], exchange_type='fanout')
-		        self.request_channel.queue_declare(current_app.config['SPARK_REQUEST_QUEUE'], durable=True)
-		        self.request_channel.queue_bind(exchange=current_app.config['SPARK_REQUEST_EXCHANGE'], queue=current_app.config['SPARK_REQUEST_QUEUE'])
-		        self.request_channel.basic_consume(self.callback, queue=current_app.config['SPARK_REQUEST_QUEUE'])
+                self.connect_to_rabbitmq()
+                self.request_channel = self.rabbitmq.channel()
+                self.request_channel.exchange_declare(exchange=current_app.config['SPARK_REQUEST_EXCHANGE'], exchange_type='fanout')
+                self.request_channel.queue_declare(current_app.config['SPARK_REQUEST_QUEUE'], durable=True)
+                self.request_channel.queue_bind(exchange=current_app.config['SPARK_REQUEST_EXCHANGE'], queue=current_app.config['SPARK_REQUEST_QUEUE'])
+                self.request_channel.basic_consume(self.callback, queue=current_app.config['SPARK_REQUEST_QUEUE'])
 
-		        self.result_channel = self.rabbitmq.channel()
-		        self.result_channel.exchange_declare(exchange=current_app.config['SPARK_RESULT_EXCHANGE'], exchange_type='fanout')
+                self.result_channel = self.rabbitmq.channel()
+                self.result_channel.exchange_declare(exchange=current_app.config['SPARK_RESULT_EXCHANGE'], exchange_type='fanout')
 
                 current_app.logger.info('Started request consumer...')
                 try:
