@@ -1,16 +1,17 @@
 from datetime import datetime
 from listenbrainz_spark.utils import get_listens
 from listenbrainz_spark.constants import LAST_FM_FOUNDING_YEAR
+from listenbrainz_spark.stats.user.utils import get_artists, get_recordings, get_releases
 
 def calculate():
-	now = datetime.utcnow()
-	listens_df = get_listens(from_date=datetime(LAST_FM_FOUNDING_YEAR, 1, 1), to_date=now)
-	table_name = 'stats.user.all'
+    now = datetime.utcnow()
+    listens_df = get_listens(from_date=datetime(LAST_FM_FOUNDING_YEAR, 1, 1), to_date=now)
+    table_name = 'stats.user.all'
     listens_df.createOrReplaceTempView(table_name)
 
-	data = defaultdict(dict)
+    data = defaultdict(dict)
 
-	# calculate and put artist stats into the result
+    # calculate and put artist stats into the result
     artist_data = get_artists(table)
     for user_name, user_artists in artist_data.items():
         data[user_name]['artists'] = {
