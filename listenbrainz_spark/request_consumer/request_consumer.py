@@ -21,6 +21,7 @@ import pika
 import uuid
 import json
 import sys
+import time
 
 import listenbrainz_spark
 from datetime import datetime
@@ -60,6 +61,7 @@ class RequestConsumer:
                 )
                 break
             except pika.exceptions.ConnectionClosed:
+                time.sleep(1)
 
 
     def callback(self, channel, method, properties, body):
