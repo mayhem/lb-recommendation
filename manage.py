@@ -116,7 +116,7 @@ def user():
 
 @cli.command(name='request_consumer')
 def request_consumer():
-    """ Invoke script responsible for calculating user statistics.
+    """ Invoke script responsible for the request consumer
     """
     from listenbrainz_spark.request_consumer.request_consumer import main
     with app.app_context():
