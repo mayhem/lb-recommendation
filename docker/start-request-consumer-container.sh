@@ -24,4 +24,4 @@ docker run \
         --conf "spark.executor.memory"=$EXECUTOR_MEMORY \
         --conf "spark.driver.memory"=$DRIVER_MEMORY \
         --py-files listenbrainz_spark_request_consumer.zip \
-        listenbrainz_spark/request_consumer/main.py
+	manage.py request_consumer
