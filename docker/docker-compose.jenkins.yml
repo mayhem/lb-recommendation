@@ -10,6 +10,9 @@ services:
     command: hdfs namenode
     volumes:
       - namenode:/home/hadoop/hdfs:z
+    ports:
+      - "9000:9000"
+      - "9870:9870"
 
   datanode:
     image: metabrainz/hadoop-yarn:beta
@@ -22,6 +25,4 @@ services:
       context: ..
       dockerfile: Dockerfile
       target: metabrainz-spark-dev
-    command: py.test --junitxml=/data/test_report.xml --cov-report xml:/data/coverage.xml
-    volumes:
-      - ..:/rec:z
+    command: dockerize -wait tcp://hadoop-master:9000 -timeout 60s bash -c "cp listenbrainz_spark/config.py.sample listenbrainz_spark/config.py; py.test --junitxml=/data/test_report.xml --cov-report xml:/data/coverage.xml"
