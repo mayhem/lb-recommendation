@@ -1,7 +1,8 @@
 from unittest.mock import patch, MagicMock
 
-from listenbrainz_spark.tests import SparkTestCase
 from listenbrainz_spark.request_consumer.request_consumer import RequestConsumer
+from listenbrainz_spark.tests import SparkTestCase
+from listenbrainz_spark.utils import create_app
 
 
 class RequestConsumerTestCase(SparkTestCase):
