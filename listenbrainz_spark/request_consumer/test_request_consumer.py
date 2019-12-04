@@ -6,7 +6,7 @@ from listenbrainz_spark.request_consumer.request_consumer import RequestConsumer
 
 class RequestConsumerTestCase(SparkTestCase):
 
-    def setUp():
+    def setUp(self):
         self.consumer = RequestConsumer()
         self.consumer.rabbitmq = MagicMock()
         self.consumer.request_channel = MagicMock()
